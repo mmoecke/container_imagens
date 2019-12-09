@@ -1,9 +1,10 @@
-# Dockerfile for building fogproject server image for Debian 9 (stretch), with all additional software needed.
+# Dockerfile for building rfabelhas container.
+# Collect data from TTN DB and post it in InfluxDB
 #
 # Version  0.1
 FROM debian:stretch
 
-MAINTAINER Ricardo Martins <ricardo.ifsc@gmail.com>
+MAINTAINER Marcos Moecke <moecke@ifsc.edu.br>
 
 COPY start.services /etc/init.d/start.services
 COPY docker-entrypoint.sh /
@@ -11,15 +12,11 @@ COPY docker-entrypoint.sh /
 RUN apt update && \
     apt upgrade -y && \
     apt purge -y ssh openssh-server && \
-    apt install git iproute2 -y && \
     chmod 0755 /docker-entrypoint.sh && \
-    chmod 0755 /etc/init.d/start.services && \
-    git -C /opt clone https://github.com/fogproject/fogproject.git Install_fog && \
-    cd /opt/Install_fog/bin ; sh -c '/bin/echo -e "\nNormal\nY\neth0\nN\nN\n\n\n\nY\n\n\n" | /bin/bash installfog.sh' && \
-    /bin/rm -rf /opt/Install_fog
+    chmod 0755 /etc/init.d/start.services
 
 EXPOSE 21 111 2049 8083 44383 69/udp
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD /usr/sbin/apachectl -D FOREGROUND
+CMD /usr/sbin/bash -D FOREGROUND
